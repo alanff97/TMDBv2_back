@@ -14,7 +14,9 @@ Favorites.associate = function (models) {
   Favorites.belongsTo(models.User, {
     foreignKey: {
       allowNull: false,
-      unique: true, // Agrega esta opción para asegurarte de que solo haya un favorito por usuario
+      unique: true,
     },
   });
 };
+
+module.export = Favorites;

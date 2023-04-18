@@ -4,29 +4,35 @@ const User = require("../models/User");
 const { generateToken } = require("../config/tokens");
 const { validateCookie } = require("../middlewares/auth");
 
-router.post("/register", (req, res, next) => {
-  console.log(req.body);
-  User.create(req.body).then((user) => res.status(201).send(user));
+router.post("/register", async (req, res, next) => {
+  try {
+    const user = await User.create(req.body);
+    res.status(201).send(user);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   let { email, password } = req.body;
-  User.findOne({ where: { email } }).then((user) => {
-    if (!user) return res.sendStatus(401);
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.sendStatus(404);
 
-    user.validatePassword(password).then((isValid) => {
-      if (!isValid) return res.sendStatus(401);
+    const isValid = await user.validatePassword(password);
+    if (!isValid) return res.sendStatus(401);
 
-      const payload = {
-        email: user.email,
-        name: user.name,
-        lastname: user.lastname,
-      };
-      const token = generateToken(payload);
-      res.cookie("token", token);
-      res.send(payload);
-    });
-  });
+    const payload = {
+      email: user.email,
+      name: user.name,
+      lastname: user.lastname,
+    };
+    const token = generateToken(payload);
+    res.cookie("token", token);
+    res.send(payload);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get("/me", validateCookie, (req, res) => {

@@ -1,6 +1,7 @@
 // Configuración del server
 require("dotenv").config({ path: "./.env" });
 const express = require("express");
+const cors = require("cors");
 
 const cookieParser = require("cookie-parser");
 
@@ -15,8 +16,13 @@ app.use(cookieParser());
 
 app.use("/api", routes);
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+
 const PORT = process.env.PORT || 3002;
-console.log(process.env);
 
 db.sync({ force: false }).then(() => {
   console.log("Db connected");
