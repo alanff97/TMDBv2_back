@@ -1,5 +1,5 @@
 // Configuración del server
-
+require("dotenv").config({ path: "./.env" });
 const express = require("express");
 
 const cookieParser = require("cookie-parser");
@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 app.use("/api", routes);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 db.sync({ force: false }).then(() => {
   console.log("Db connected");

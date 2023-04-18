@@ -1,6 +1,7 @@
+require("dotenv").config("../.env");
 const jwt = require("jsonwebtoken");
 
-const SECRET = "TMDBsecret";
+const SECRET = process.env.SECRET;
 
 function generateToken(payload) {
   const token = jwt.sign({ user: payload }, SECRET, { expiresIn: "2h" });
