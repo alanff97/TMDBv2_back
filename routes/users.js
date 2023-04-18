@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const User = require("./users");
+const User = require("../models/User");
 const { generateToken } = require("../config/tokens");
-const { validateCookie } = require("../middleware/auth");
+const { validateCookie } = require("../middlewares/auth");
 
 router.post("/register", (req, res, next) => {
   console.log(req.body);

@@ -16,6 +16,7 @@ app.use(cookieParser());
 app.use("/api", routes);
 
 const PORT = process.env.PORT || 3002;
+console.log(process.env);
 
 db.sync({ force: false }).then(() => {
   console.log("Db connected");
