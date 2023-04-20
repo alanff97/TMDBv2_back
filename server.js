@@ -24,6 +24,11 @@ app.use(
 );
 app.use("/api", routes);
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Internal Server Error");
+});
+
 const PORT = process.env.PORT || 3002;
 
 db.sync({ force: false }).then(() => {

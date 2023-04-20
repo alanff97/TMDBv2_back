@@ -7,7 +7,6 @@ Favorites.init(
   {
     mediaId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       allowNull: false,
     },
     type: {
