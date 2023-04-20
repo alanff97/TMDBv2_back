@@ -1,19 +1,30 @@
 const express = require("express");
 const router = express.Router();
-
-const Favorites = require("../models/Favorites");
+const { User, Favorites } = require("../models/index");
 const { validateCookie } = require("../middlewares/auth");
 
 router.get("/", validateCookie, async (req, res, next) => {
   try {
-    const user = await User.findOne({
-      where: { email: req.user.email },
-      include: [Favorites],
+    const fav = await Favorites.findAll({
+      where: { UserId: req.user.id },
     });
-    if (!user) return res.sendStatus(404);
-    const favorites = user.favorites;
-    favorites ? res.send(favorites) : null;
+
+    res.status(200).send(fav);
   } catch (error) {
     next(error);
   }
 });
+
+router.post("/add", validateCookie, async (req, res, next) => {
+  try {
+    const { mediaId, type } = req.body;
+    const user = await User.findByPk(req.user.id);
+    const fav = await Favorites.create({ mediaId, type });
+    await fav.setUser(user);
+    res.send("Se agregó a favoritos");
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;
