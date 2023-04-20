@@ -1,6 +1,8 @@
 // Configuración del server
 require("dotenv").config({ path: "./.env" });
+const volleyball = require("volleyball");
 const express = require("express");
+const cors = require("cors");
 
 const cookieParser = require("cookie-parser");
 
@@ -10,13 +12,24 @@ const routes = require("./routes");
 
 const app = express();
 
+app.use(volleyball);
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
 app.use("/api", routes);
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Internal Server Error");
+});
+
 const PORT = process.env.PORT || 3002;
-console.log(process.env);
 
 db.sync({ force: false }).then(() => {
   console.log("Db connected");

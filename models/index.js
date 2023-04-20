@@ -1,3 +1,8 @@
-const user = require("./Users");
+const express = require("express");
+const User = require("./User");
+const Favorites = require("./Favorites");
 
-module.exports = { user };
+Favorites.belongsTo(User);
+User.hasMany(Favorites);
+
+module.exports = { User, Favorites };
