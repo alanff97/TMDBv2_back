@@ -1,7 +1,6 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../db");
 const bcrypt = require("bcrypt");
-const Favorites = require("./Favorites");
 
 class User extends Model {}
 User.init(
@@ -47,10 +46,6 @@ User.prototype.validatePassword = function (password) {
   return bcrypt
     .hash(password, this.salt)
     .then((hash) => hash === this.password);
-};
-
-User.associate = function (models) {
-  User.hasOne(models.Favorites);
 };
 
 module.exports = User;

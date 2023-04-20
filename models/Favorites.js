@@ -1,22 +1,24 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../db");
-const User = require("./User");
 
 class Favorites extends Model {}
 
-Favorites.init({
-  movie_id: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER),
-  },
-});
-
-Favorites.associate = function (models) {
-  Favorites.belongsTo(models.User, {
-    foreignKey: {
+Favorites.init(
+  {
+    mediaId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
       allowNull: false,
-      unique: true,
     },
-  });
-};
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    modelName: "favorites",
+  }
+);
 
-module.export = Favorites;
+module.exports = Favorites;
