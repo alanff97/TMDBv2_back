@@ -1,5 +1,6 @@
 // Configuración del server
 require("dotenv").config({ path: "./.env" });
+const volleyball = require("volleyball");
 const express = require("express");
 const cors = require("cors");
 
@@ -11,16 +12,17 @@ const routes = require("./routes");
 
 const app = express();
 
+app.use(volleyball);
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api", routes);
-
 app.use(
   cors({
+    credentials: true,
     origin: "http://localhost:3000",
   })
 );
+app.use("/api", routes);
 
 const PORT = process.env.PORT || 3002;
 
