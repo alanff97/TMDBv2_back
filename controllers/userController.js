@@ -1,6 +1,6 @@
-const { User, Favorites } = require("../models/index");
-const { generateToken } = require("../config/tokens");
-const { validateCookie } = require("../middlewares/auth");
+const { User, Favorites } = require('../models/index');
+const { generateToken } = require('../config/tokens');
+const { validateCookie } = require('../middlewares/auth');
 
 const userRegister = async (req, res, next) => {
   try {
@@ -15,8 +15,8 @@ const userRegister = async (req, res, next) => {
       },
     });
     created
-      ? res.status(201).send(user)
-      : res.status(409).send({ error: "User already exists" });
+      ? res.status(201).send('User Registered')
+      : res.status(409).send('User already exists');
   } catch (error) {
     next(error);
   }
@@ -25,7 +25,8 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res, next) => {
   let { email, password } = req.body;
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email }, include: Favorites });
+    console.log(user);
     if (!user)
       return res
         .status(404)
@@ -33,16 +34,17 @@ const userLogin = async (req, res, next) => {
 
     const isValid = await user.validatePassword(password);
     if (!isValid)
-      return res.status(401).send({ error: "Invalid password, try again." });
+      return res.status(401).send({ error: 'Invalid password, try again.' });
 
     const payload = {
       id: user.id,
       email: user.email,
       name: user.name,
       lastname: user.lastname,
+      favorites: user.favorites,
     };
     const token = generateToken(payload);
-    res.cookie("token", token);
+    res.cookie('token', token);
     res.send(payload);
   } catch (error) {
     next(error);
@@ -54,7 +56,7 @@ const userMe = async (req, res, next) => {
 };
 
 const userLogout = async (req, res, next) => {
-  res.clearCookie("token");
+  res.clearCookie('token');
   res.sendStatus(204);
 };
 
