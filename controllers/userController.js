@@ -26,7 +26,7 @@ const userLogin = async (req, res, next) => {
   let { email, password } = req.body;
   try {
     const user = await User.findOne({ where: { email }, include: Favorites });
-    console.log(user);
+
     if (!user)
       return res
         .status(404)

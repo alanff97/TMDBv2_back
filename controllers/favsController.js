@@ -1,4 +1,4 @@
-const { User, Favorites } = require("../models/index");
+const { User, Favorites } = require('../models/index');
 
 const allFavs = async (req, res, next) => {
   try {
@@ -23,24 +23,28 @@ const addFav = async (req, res, next) => {
       },
     });
     if (existingFav) {
-      res.status(400).send("Favorite already exists");
+      res.status(400).send('Favorite already exists');
       return;
     }
     const fav = await Favorites.create({ mediaId, type });
     await fav.setUser(user);
-    res.send("Added to favorites");
+    res.send('Added to favorites');
   } catch (error) {
     next(error);
   }
 };
 
 const deleteFav = async (req, res, next) => {
+  console.log(req.query);
   try {
     const { mediaId } = req.query;
-    const deleted = await Favorites.destroy({ where: { mediaId } });
+    const deleted = await Favorites.destroy({
+      where: { mediaId: parseInt(mediaId) },
+    });
     deleted
-      ? res.status(202).send("Remove from favorites")
-      : res.status(404).send("Not Found");
+      ? res.status(202).send('Remove from favorites')
+      : res.status(404).send('Not Found');
+    res.send('console');
   } catch (error) {
     next(error);
   }
