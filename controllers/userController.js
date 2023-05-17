@@ -25,7 +25,7 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res, next) => {
   let { email, password } = req.body;
   try {
-    const user = await User.findOne({ where: { email }, include: Favorites });
+    const user = await User.findOne({ where: { email } });
 
     if (!user)
       return res
@@ -41,11 +41,13 @@ const userLogin = async (req, res, next) => {
       email: user.email,
       name: user.name,
       lastname: user.lastname,
-      favorites: user.favorites,
     };
+    const favoritesList = await Favorites.findAll({
+      where: { userId: user.id },
+    });
     const token = generateToken(payload);
     res.cookie('token', token);
-    res.send(payload);
+    res.send({ user: payload, favorites: favoritesList });
   } catch (error) {
     next(error);
   }

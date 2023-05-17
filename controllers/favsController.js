@@ -1,4 +1,5 @@
 const { User, Favorites } = require('../models/index');
+const { generateToken } = require('../config/tokens');
 
 const allFavs = async (req, res, next) => {
   try {
@@ -8,13 +9,13 @@ const allFavs = async (req, res, next) => {
 
     res.status(200).send(fav);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
 const addFav = async (req, res, next) => {
   try {
-    const { mediaId, type } = req.body;
+    const { mediaId, type, title, overview, image, backdrop_path } = req.body;
     const user = await User.findByPk(req.user.id);
     const existingFav = await Favorites.findOne({
       where: {
@@ -26,27 +27,49 @@ const addFav = async (req, res, next) => {
       res.status(400).send('Favorite already exists');
       return;
     }
-    const fav = await Favorites.create({ mediaId, type });
+    const fav = await Favorites.create({
+      mediaId,
+      type,
+      title,
+      overview,
+      image,
+      backdrop_path,
+    });
     await fav.setUser(user);
-    res.send('Added to favorites');
+    const updatedFavorites = await Favorites.findAll({
+      where: { userId: user.id },
+    });
+
+    return res.send({
+      message: 'Added to favorites',
+      data: updatedFavorites,
+    });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
 const deleteFav = async (req, res, next) => {
-  console.log(req.query);
   try {
     const { mediaId } = req.query;
+    const user = await User.findByPk(req.user.id);
     const deleted = await Favorites.destroy({
       where: { mediaId: parseInt(mediaId) },
     });
-    deleted
-      ? res.status(202).send('Remove from favorites')
-      : res.status(404).send('Not Found');
-    res.send('console');
+
+    if (deleted) {
+      const updatedFavorites = await Favorites.findAll({
+        where: { userId: user.id },
+      });
+      res.status(202).send({
+        message: 'Removed from favorites',
+        data: updatedFavorites,
+      });
+    } else {
+      res.status(404).send('Not Found');
+    }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
